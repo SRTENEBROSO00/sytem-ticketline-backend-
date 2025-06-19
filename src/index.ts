@@ -30,6 +30,6 @@ AppDataSource.initialize()
         console.log(`🚀 Server runnin on => http://localhost:${PORT}`)
     })
 })
-.catch((err) => {
+.catch((err: unknown) => {
     console.log(`Connection error: ${err}`)
 });

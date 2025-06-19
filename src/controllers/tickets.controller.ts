@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Ticket } from "./../entity/Ticket";
 import { AppDataSource } from "../data-source";
+import { getIO } from "../socket.io";
 
 // Ahora toca hacer
 export class TicketController {
@@ -61,12 +62,15 @@ export class TicketController {
 
       // Guardar los datos
       await this.ticketRepo.save(newTicket);
+      
+      //Emit event
+      getIO().emit("ticket:new", newTicket)
 
-      res.status(200).json({ message: "✔ Data saved" });
+      res.status(200).json({ message: "✔ Data saved." });
     } catch (error) {
       res.status(500).json({ message: `Error creating data: ${error}` });
     }
-  }
+  };
 
   async getAllTicket(_req: Request, res: Response): Promise<any> {
     try {
@@ -81,7 +85,7 @@ export class TicketController {
     } catch (error) {
       res.status(500).json({ message: `Error getting data: ${error}` });
     }
-  }
+  };
 
   async getTicketById(req: Request, res: Response): Promise<void> {
     try {
@@ -98,7 +102,7 @@ export class TicketController {
     } catch (error) {
       res.status(500).json({ message: `Error getting ID ticket: ${error}` });
     }
-  }
+  };
  
   async updateTicketById(req: Request, res: Response): Promise<void> {
     try {
@@ -140,12 +144,15 @@ export class TicketController {
 
       // Save
       const saveTicketUpdated = await this.ticketRepo.save(resTicketToUpdate)
+
+      //Emit event
+      getIO().emit("ticket:update", saveTicketUpdated)
       
       res.json({message: ' ✔ Ticket updated successfully', ticket: saveTicketUpdated})
     } catch (error) {
       res.status(500).json({ message: `Error updating tickets: ${error}` });
     }
-  }
+  };
 
   async deleteTicket(req: Request, res: Response): Promise<any> {
     try {
