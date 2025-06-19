@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
 import { Ticket } from "./../entity/Ticket";
-import { User } from "../entity/User";
 import { AppDataSource } from "../data-source";
 
 // Ahora toca hacer
 export class TicketController {
+  
   //Get repository
   private ticketRepo = AppDataSource.getRepository(Ticket); //Preapre repo
-  private userRepo = AppDataSource.getRepository(User); // prepare repo
 
   //Business logic (CRUD)
   async createTicket(req: Request, res: Response): Promise<void> {
