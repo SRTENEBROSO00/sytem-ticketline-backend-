@@ -33,7 +33,6 @@ export class TicketController {
         address,
         contracts,
         descriptionIssue,
-        status,
         assignedTechnician
       }
       const missingFields = Object.entries(requiredFields)
@@ -52,12 +51,12 @@ export class TicketController {
         address: address,
         contracts: contracts,
         descriptionIssue: descriptionIssue,
-        status: status,
+        status: "PENDING",
         assignedTechnician: assignedTechnician,
         technicalDescripction,
         creationDate: new Date(),
         solveDate,
-        softDelete: softDelete
+        softDelete: false
       });
 
       // Guardar los datos
@@ -164,10 +163,10 @@ export class TicketController {
       };
       
       resTicketDelID.softDelete = true;
-      console.log(resTicketDelID.softDelete);
 
       const result = await this.ticketRepo.save(resTicketDelID);
       res.status(200).json({message: `✔ Ticket deleted successfully`, ticket: result})
+      
     } catch (error) {
       res.status(500).json({ message: `Error deleting ticket: ${error}` });
     };

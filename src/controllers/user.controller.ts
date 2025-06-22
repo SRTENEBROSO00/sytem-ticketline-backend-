@@ -9,8 +9,8 @@ export class UserController {
 
   async register(req: Request, res: Response): Promise<any> {
     try {
-      const { email, password, name, role, ticket } = req.body;
-      if (!email || !password || !name || !role || !ticket)
+      const { email, password, name, role } = req.body;
+      if (!email || !password || !name || !role)
         return res.status(400).json({ message: "Fields required." });
 
       const existingUser = await this.userRepo.findOneBy({ email });
@@ -24,13 +24,17 @@ export class UserController {
         password: hashedPassword,
         name: name,
         role: role,
-        tickets: ticket,
+        // tickets: ticket,
       });
       await this.userRepo.save(newUser);
       res.status(200).json({ message: "✔ User registed successfully!" });
     } catch (error) {
       res.status(500).json({ message: `Server error: ${error}` });
     }
+  }
+
+  async updateUserData(req: Request, res: Response): Promise<any> {
+    
   }
   
 }

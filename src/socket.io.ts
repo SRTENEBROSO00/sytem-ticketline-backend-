@@ -1,6 +1,5 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
-import { Socket } from "dgram";
 
 let io : Server;
 

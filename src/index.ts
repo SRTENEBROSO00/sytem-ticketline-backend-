@@ -3,6 +3,9 @@ import user from './routes/user.route';
 import tickets from './routes/ticket.route'
 import { AppDataSource } from './data-source';
 import cors from 'cors';
+import { initSocket } from './socket.io';
+import http, { METHODS } from "http";
+
 
 // Variables
 const app = express();
@@ -21,6 +24,11 @@ app.use(cors({
 // Rutas
 app.use(user);
 app.use('/api/', tickets);
+const server = http.createServer(app);
+
+
+//Init socket
+initSocket(server)
 
 // Inicliaziamos la database
 AppDataSource.initialize()

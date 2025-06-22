@@ -20,7 +20,7 @@ export class User {
     password!: string;
 
     @OneToMany(() => Ticket, ticket => ticket.user, {eager:true, cascade:true})
-    tickets!: Ticket[];
+    tickets?: Ticket[];
 
 
 
