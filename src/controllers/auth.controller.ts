@@ -1,9 +1,9 @@
 // Controller
-import { Request, Response } from "express";
-import { genToken } from "../config/jwt";
-import { AppDataSource } from "../data-source";
-import { User } from "../entity/User";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
+import { User } from "../entity/User";
+import { Request, Response } from "express";
+import { AppDataSource } from "../data-source";
 
 export class AuthController {
   private userRepo = AppDataSource.getRepository(User);
@@ -24,12 +24,24 @@ export class AuthController {
       if(!isMatch) res.status(401).json({message: 'Wrong password.'});
       
       //Gen token 
-      const token = genToken({email: resUser.email, id: resUser.id})
-      // return res.json({token: token, userData: resUser});
+      // const token = genToken({email: resUser.email, id: resUser.id})
+      // // return res.json({token: token, userData: resUser});
+
+      //Gen token 
+      const jsonSecretKey = process.env.JWT_SECRET;
+      if(!jsonSecretKey) {
+        throw new Error('Variable de entorno no definida.')
+      }
+      const token = jwt.sign(
+        {id: resUser.id, email: resUser.email},
+        jsonSecretKey,
+        {expiresIn: '1h'},
+      )
+
 
       res.cookie('token', token, {
-        httpOnly: true,
-       secure: process.env.NODE_ENV === 'production',
+        httpOnly: true, //Evitar que JS accesa a la cookie
+        secure: process.env.NODE_ENV === 'production', // Cambia a true en despliegue
         sameSite: 'strict',
         maxAge: 60 * 60 * 1000, //1H
       });

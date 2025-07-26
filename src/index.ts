@@ -1,10 +1,11 @@
+import cors from 'cors';
 import express from 'express';
+import http, { METHODS } from "http";
 import user from './routes/user.route';
+import { initSocket } from './socket.io';
+import cookieParser from 'cookie-parser';
 import tickets from './routes/ticket.route'
 import { AppDataSource } from './data-source';
-import cors from 'cors';
-import { initSocket } from './socket.io';
-import http, { METHODS } from "http";
 
 
 // Variables
@@ -13,17 +14,18 @@ const PORT = 3000;
 
 //Middleware
 app.use(express.json());
+app.use(cookieParser()); //Parsear cookies en peticiones
 
 //Cors config
 app.use(cors({
-    origin: "*", // Front URL
+    origin: process.env.FRONTEND_URL || "http://localhost:5173", // Front URL
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    credentials: true, // Para session/cookie
+    credentials: true, // Para session/cookie. Activa el Acess-Control-Allow-Crendetial
 }))
 
 // Rutas
 app.use(user);
-app.use('/api/', tickets);
+app.use('/ticket/', tickets);
 const server = http.createServer(app);
 
 

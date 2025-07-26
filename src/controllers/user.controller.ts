@@ -26,6 +26,7 @@ export class UserController {
         role: role,
         // tickets: ticket,
       });
+      //Crear DTO para no enviar la contrasena hasheada al front
       await this.userRepo.save(newUser);
       res.status(200).json({ message: "✔ User registed successfully!" });
     } catch (error) {

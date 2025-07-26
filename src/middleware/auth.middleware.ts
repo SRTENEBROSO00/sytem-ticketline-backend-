@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken"
 import { verifyToken } from "../config/jwt";
-import { Ticket } from "../entity/Ticket";
+import { Request, Response, NextFunction } from "express";
+import { Any } from "typeorm";
 
-// Extend Express Request interface to include 'user'
+// // Extend Express Request interface to include 'user'
 declare global {
   namespace Express {
     interface Request {
@@ -12,21 +13,24 @@ declare global {
 }
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): any  => {
-    const authHeader = req.headers.authorization;
-
-    if(!authHeader || !authHeader.startsWith('Bearer')) {
-        return res.status(401).json({message: 'Token no provided.'});
+    const token = req.cookies.token;
+    //Unauthorized
+    if(!token) {
+      return res.status(401).json({error: 'Token no provided'});
     }
 
-    const token = authHeader.split(' ')[1];
-
+    //Verificar el token
     try {
-        const userData = verifyToken(token);
-        req.user = userData;
-        next()
-    } catch {
-        return res.status(403).json({ mensaje: 'Token no valid' });
-    }
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret || typeof jwtSecret !== "string") {
+        return res.status(500).json({ error: "JWT secret is not configured" });
+      }
+      const payload = jwt.verify(token, jwtSecret);
+      req.user = payload;
+      next();
+    } catch (err) {
+      return res.status(401).json({ message: 'Token no privides', error: err });
+    } 
 }
 
 export const testAuthMiddleware = (req: Request, res: Response, next: NextFunction): any  => {
